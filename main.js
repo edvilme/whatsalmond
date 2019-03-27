@@ -325,7 +325,8 @@ app.get("/", function(req, res){
 		reqToken.write(JSON.stringify(reqTokenBody))
 		reqToken.end()
     }else{
-		res.end()
+		res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=e296adf4ee85476f&scope=user-exec-command&redirect_uri=https://edvilme.github.io/Auto');		
+		//res.end()
 	}
 })
 app.listen(process.env.PORT || 4000, function(){
