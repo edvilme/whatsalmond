@@ -11,16 +11,16 @@ var reqTokenOptions = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "origin": "https://bob-assistant.heroku.com"
+      "origin": "https://bob-assistant.herokuapp.com"
     }
 }
 
 var reqTokenBody = {
     "grant_type": "authorization_code",
-    "client_id": "0e7e4b421df2a9f6",
-	"client_secret": "be1491c7b7a98282fa10c25e75ad94fb6511f0742d82f76a8e36682023e7f139",
+    "client_id": "9e38447172c71a0f",
+	"client_secret": "a817b557fee785466d814d9a5d877d6579a7af3bfd9a109026f631fd947d3f81",
 	"code": "",
-	"redirect_uri": "https://bob-assistant.heroku.com"
+	"redirect_uri": "https://bob-assistant.herokuapp.com"
 }
 
 app.get("/", function(req, res){
@@ -30,7 +30,7 @@ app.get("/", function(req, res){
 			if(JSON.parse(data.toString())['access_token'] != undefined){
 				access_token=JSON.parse(data.toString())['access_token']
 			}else{
-				res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=0e7e4b421df2a9f6&scope=user-exec-command&redirect_uri=https://bob-assistant.heroku.com');
+				res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com');
 			}
 			res.write(`
 			<html>
@@ -333,7 +333,7 @@ app.get("/", function(req, res){
 		reqToken.write(JSON.stringify(reqTokenBody))
 		reqToken.end()
     }else{
-		res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=0e7e4b421df2a9f6&scope=user-exec-command&redirect_uri=https://bob-assistant.heroku.com');		
+		res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com');
 		//res.end()
 	}
 })
