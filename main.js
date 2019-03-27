@@ -11,16 +11,16 @@ var reqTokenOptions = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "origin": "http://localhost"
+      "origin": "https://bob-assistant.heroku.com"
     }
 }
 
 var reqTokenBody = {
     "grant_type": "authorization_code",
-    "client_id": "e296adf4ee85476f",
-	"client_secret": "968ce8ec5d084c3c921662217e57b564e42aec434de7d2b6e76d6b440b9feb85",
+    "client_id": "0e7e4b421df2a9f6",
+	"client_secret": "be1491c7b7a98282fa10c25e75ad94fb6511f0742d82f76a8e36682023e7f139",
 	"code": "",
-	"redirect_uri": "https://edvilme.github.io/Auto"
+	"redirect_uri": "https://bob-assistant.heroku.com"
 }
 
 app.get("/", function(req, res){
@@ -30,7 +30,7 @@ app.get("/", function(req, res){
 			if(JSON.parse(data.toString())['access_token'] != undefined){
 				access_token=JSON.parse(data.toString())['access_token']
 			}else{
-				res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=e296adf4ee85476f&scope=user-exec-command&redirect_uri=https://edvilme.github.io/Auto');
+				res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=0e7e4b421df2a9f6&scope=user-exec-command&redirect_uri=https://bob-assistant.heroku.com');
 			}
 			res.write(`
 			<html>
@@ -53,7 +53,7 @@ app.get("/", function(req, res){
 							flex-direction: column;
 							max-width: 720px;
 							width: 100%;
-							
+							flex: 1;
 							box-sizing: border-box;
 						}
 						.message, .chat-input{
@@ -121,7 +121,7 @@ app.get("/", function(req, res){
 							flex-direction: row;
 							align-items: center;
 							align-content: center;
-							position: fixed; 
+							position: sticky; 
 							position: -webkit-sticky;
 							margin: 0;
 							width: 100%;
@@ -162,6 +162,12 @@ app.get("/", function(req, res){
 							box-sizing: border-box;
 							background-color: white;
 						  }
+						  .credits{
+							  padding: 4;
+							  font-family: Arial, sans-serif;
+							  font-size: 12;
+							  color: rgb(160,160,160)
+						  }
 					</style>
 				</head>
 				<body>
@@ -173,6 +179,7 @@ app.get("/", function(req, res){
 						<div class="header-toolbar" style="display: flex;"></div>
 					</div>
 					<div class="chat_cont"></div>
+					<div class="credits">edvilme 2019</div>
 					<input type="text" class="chat-input" placeholder="What can I help you with?"></input>
 					<script>
 						var access_token="${access_token}";
@@ -257,6 +264,7 @@ app.get("/", function(req, res){
 									//document.querySelector(".chat_cont").append(message_no);
 								}
 							}
+							document.querySelector(".chat_cont").scrollTop = document.querySelector(".chat_cont").scrollHeight;
 						}
 						function messageButton(parsed, element){
 							element.classList.add("message-button")
@@ -325,7 +333,7 @@ app.get("/", function(req, res){
 		reqToken.write(JSON.stringify(reqTokenBody))
 		reqToken.end()
     }else{
-		res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=e296adf4ee85476f&scope=user-exec-command&redirect_uri=https://edvilme.github.io/Auto');		
+		res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=0e7e4b421df2a9f6&scope=user-exec-command&redirect_uri=https://bob-assistant.heroku.com');		
 		//res.end()
 	}
 })
