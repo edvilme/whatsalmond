@@ -1,0 +1,16 @@
+{
+  "name": "bob-assistant",
+  "version": "1.0.0",
+  "description": "Bob Assistant Wrapper for Almond and Whatsapp",
+  "main": "main.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "author": "edvilme Eduardo Villalpando",
+  "license": "ISC"
+}
