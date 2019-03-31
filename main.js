@@ -1,8 +1,10 @@
 const express = require('express');
 const app = express();
 const https = require('https');
-const url = require('url')
-var access_token
+const url = require('url');
+const WebSocket = require('ws')
+var access_token;
+var refresh_token; 
 
 var reqTokenOptions = {
     host: "almond.stanford.edu",
@@ -18,9 +20,9 @@ var reqTokenOptions = {
 var reqTokenBody = {
     "grant_type": "authorization_code",
     "client_id": "9e38447172c71a0f",
-	"client_secret": "a817b557fee785466d814d9a5d877d6579a7af3bfd9a109026f631fd947d3f81",
-	"code": "",
-	"redirect_uri": "https://bob-assistant.herokuapp.com"
+		"client_secret": "a817b557fee785466d814d9a5d877d6579a7af3bfd9a109026f631fd947d3f81",
+		"code": "",
+		"redirect_uri": "https://bob-assistant.herokuapp.com",
 }
 
 app.get("/", function(req, res){
@@ -29,6 +31,7 @@ app.get("/", function(req, res){
 		resToken.on("data", function(data){
 			if(JSON.parse(data.toString())['access_token'] != undefined){
 				access_token=JSON.parse(data.toString())['access_token']
+				refresh_token=JSON.parse(data.toString())['refresh_token']
 			}else{
 				res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com');
 			}
@@ -183,6 +186,7 @@ app.get("/", function(req, res){
 					<input type="text" class="chat-input" placeholder="What can I help you with?"></input>
 					<script>
 						var access_token="${access_token}";
+						var refresh_token="${refresh_token}";
 						var ws;  
 						var wasOpen=false;
 						var reconnectTimeout;
@@ -335,8 +339,143 @@ app.get("/", function(req, res){
     }else{
 		res.redirect(301, 'https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com');
 		//res.end()
+	} 
+})
+
+var webSocketsObj = {};
+
+/*
+WHATSAPP
+*/
+//users database (is refreshed every time the program executes)
+var users = {}
+//conversation endpoint; returns response message from phone number and query
+app.get("/conversation", function(req, res){
+	var phoneID = url.parse(req.url, true).query['phoneID'].toString();
+	var query = url.parse(req.url, true).query['q'];
+	//register
+	if(users[phoneID] == undefined){
+		//redirect
+		res.end(`<script>
+			window.location.replace("https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}")
+		</script>`)
+	}else{
+		var response=[]
+		if(users[phoneID]['ws']==null){
+			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
+			connectWS()
+			users[phoneID]['ws'].on("message", function(e){
+				if(query!=undefined){
+					users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
+				}
+			})
+		}else{
+			connectWS()
+			if( users[phoneID]['ws'].readyState == 1 && query != undefined){
+				users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
+			}
+		}
+		function connectWS(){
+			var wasOpen=false;
+			var reconnectTimeout=100;
+			users[phoneID]['ws'].onclose = function(){
+				if(wasOpen){
+					setTimeout(connectWS, 100)
+				}else{
+					reconnectTimeout*=1.5;
+					setTimeout(connectWS, reconnectTimeout)
+				}
+			}
+			users[phoneID]['ws'].onmessage = function(e){
+				if(!wasOpen){
+					wasOpen=true;
+					reconnectTimeout=100
+				}
+				response.push(JSON.parse(e.data));
+				if(JSON.parse(e.data)['type']=="askSpecial"){
+					res.end(JSON.stringify(response))
+				} 
+			}
+		}
 	}
 })
+
+app.get("/users", function(req, res){
+	res.type('.html');  
+
+	var phoneID = url.parse(req.url, true).query['phoneID'].toString();
+	var code = url.parse(req.url, true).query['code'];
+	var reqToken = https.request(reqTokenOptions, function(resToken){
+		resToken.on("data", function(data){
+			if(JSON.parse(data.toString())['access_token']!=undefined){
+				users[phoneID]={
+					"access_token": "",
+					"refresh_token": "",
+					"ws": null, 
+				};
+				users[phoneID]['access_token']=JSON.parse(data.toString())['access_token']
+				users[phoneID]['refresh_token']=JSON.parse(data.toString())['refresh_token']
+				res.end(`<script>
+					window.location.replace("https://bob-assistant.herokuapp.com/conversation?phoneID=${phoneID}")
+				</script>`)
+			}
+			/*res.write(data.toString())
+			res.end()*/
+		})
+	})
+	reqToken.write(JSON.stringify({...reqTokenBody, code: code, redirect_uri: "https://bob-assistant.herokuapp.com/users?phoneID="+phoneID}))
+	reqToken.end()
+})
+
+/*app.get("/whatsapp", function(req, res){
+	var phone = url.parse(req.url, true).query['phone'];
+	var query = url.parse(req.url, true).query['q'];
+	var firstTime = false;
+	var temp = []
+	console.log(webSocketsObj[phone] ? webSocketsObj[phone].readyState : "und")
+
+	if(webSocketsObj[phone] == undefined){
+		webSocketsObj[phone] = new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZTg2NGY5YzQ5YjQzODNiIiwiYXVkIjoib2F1dGgyIiwic2NvcGUiOlsidXNlci1leGVjLWNvbW1hbmQiXSwiaWF0IjoxNTUzODgzMTMzLCJleHAiOjE1NTM4ODY3MzN9.Ra6iQRmcdb2bsf2pOy3UjxJYpO2Cv_4FWqdgY_Vj3p4`)
+	}	
+	if( webSocketsObj[phone].readyState == 1){
+		webSocketsObj[phone].send(JSON.stringify({"type": "command", "text": query}))
+		console.log("USER "+JSON.stringify({"type": "command", "text": query}))
+	}
+	function connect(){
+		var wasOpen=false;
+		var reconnectTimeout=100;
+		webSocketsObj[phone].onclose = function(){
+			if(wasOpen){
+				setTimeout(connect, 100);
+			}else{
+				reconnectTimeout*=1.5;
+				setTimeout(connect, reconnectTimeout);
+			}
+			console.log("close")
+		}
+		webSocketsObj[phone].onmessage = function(e){
+			if(!wasOpen){
+				wasOpen=true;
+				reconnectTimeout=100;
+			}
+			temp.push(e.data)
+			//console.log("ALMOND :"+e.data)
+			if(JSON.parse(e.data)['type']=="askSpecial"){
+				//webSocketsObj[phone].send(JSON.stringify({"type": "command", "text": query}))
+				//console.log("USER "+JSON.stringify({"type": "command", "text": query}))
+				//firstTime=false; 
+				res.end(JSON.stringify(temp))
+			}
+		}
+	}
+	connect()
+
+
+
+	//res.write("aa")
+	//res.end()
+})*/
+
 app.listen(process.env.PORT || 4000, function(){
 	console.log("Your node js server is running")
 })
