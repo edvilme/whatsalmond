@@ -419,8 +419,11 @@ app.post("/wa", function(req, res){
 		if(users[phoneID]['ws']==null){
 			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
 			users[phoneID]['ws'].on("message", function(e){
-				console.log("mss")
-				console.log(e)
+				//console.log("mss")
+				//console.log(e)
+				if(e.type=="text"){
+					console.log(e.text)
+				}
 			})
 			twiml.message("Welcome to Bob Assistant")
 			connectWS()
