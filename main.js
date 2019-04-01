@@ -403,7 +403,7 @@ app.get("/conversation", function(req, res){
 
 
 app.post("/wa", function(req, res){
-	var phoneID = req.body.from;
+	var phoneID = req.body.From;
 	var query = req.body.Body;
 	var twiml = new MessagingResponse();
 	/*if(users[phoneID] == undefined){
@@ -450,6 +450,7 @@ app.post("/wa", function(req, res){
 			}
 		}
 	}*/
+	res.writeHead(200, {'Content-Type': 'text/xml'});
 	twiml.message("edvilme")
 	res.end(twiml.toString())
 })
