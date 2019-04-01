@@ -424,7 +424,7 @@ app.post("/wa", function(req, res){
 				//console.log("mss")
 				//console.log(e)
 				//if(JSON.parse(e).type=="text"){
-					console.log(e) 
+					console.log(e)  
 					twiml.message(e)
 				if(JSON.parse(e).type=="askSpecial"){
 					res.end(twiml.toString())
