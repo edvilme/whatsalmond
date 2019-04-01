@@ -404,7 +404,7 @@ app.get("/conversation", function(req, res){
 
 app.post("/wa", function(req, res){
 	//var phoneID = req.body.From;
-	var query = req.body.Body;
+	//var query = req.body.Body;
 	var twiml = new MessagingResponse();
 	/*if(users[phoneID] == undefined){
 		twiml.message("https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}")
