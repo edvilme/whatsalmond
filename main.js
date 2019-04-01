@@ -435,7 +435,7 @@ app.post("/wa", function(req, res){
 		users[phoneID]['ws'].on("message", function(e){
 			console.log(e)
 			twiml.message(req.body.Body)		
-	res.end(twiml.toString())
+	res.write(twiml.toString())
 
 		})
 		function connectWS(){
