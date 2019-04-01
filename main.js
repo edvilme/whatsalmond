@@ -407,7 +407,7 @@ app.get("/conversation", function(req, res){
 
 
 app.post("/wa", function(req, res){
-	var phoneID = req.body.From.split(":")[1];
+	var phoneID = req.body.From.split(":+")[1].toString();
 	var query = req.body.Body;
 	var twiml = new MessagingResponse();
 	console.log(users[phoneID])
