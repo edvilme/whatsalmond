@@ -432,6 +432,9 @@ app.post("/wa", function(req, res){
 				console.log("sent")
 			}
 		}
+		users[phoneID]['ws'].on("message", function(e){
+			console.log(e)
+		})
 		function connectWS(){
 			var wasOpen=false;
 			var reconnectTimeout=100;
@@ -455,7 +458,7 @@ app.post("/wa", function(req, res){
 					})
 					//res.end(JSON.stringify(response))
 				} */
-				console.log("received")
+				//console.log("received")
 				//twiml.message("message")
 			}
 		}
