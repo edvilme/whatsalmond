@@ -450,8 +450,9 @@ app.post("/wa", function(req, res){
 			}
 		}
 	}*/
+	console.log(req)
 	res.writeHead(200, {'Content-Type': 'text/xml'});
-	twiml.message(req.body.Body)
+	twiml.message("req.body")
 	res.end(twiml.toString())
 })
 
