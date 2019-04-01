@@ -421,8 +421,8 @@ app.post("/wa", function(req, res){
 			users[phoneID]['ws'].on("message", function(e){
 				//console.log("mss")
 				//console.log(e)
-				if(e.type=="text"){
-					console.log(e.text)
+				if(JSON.parse(e).type=="text"){
+					console.log(JSON.parse(e).text)
 				}
 			})
 			twiml.message("Welcome to Bob Assistant")
