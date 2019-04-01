@@ -3,6 +3,10 @@ const app = express();
 const https = require('https');
 const url = require('url');
 const WebSocket = require('ws')
+
+const client = require('twilio')("AC1c85eec35a11340146632055a5a6054e", "ab243ad92d213505f796f750d05185d4");
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
+
 var access_token;
 var refresh_token; 
 
@@ -347,15 +351,11 @@ var webSocketsObj = {};
 /*
 WHATSAPP
 */
-//users database (is refreshed every time the program executes)
 var users = {}
-//conversation endpoint; returns response message from phone number and query
 app.get("/conversation", function(req, res){
 	var phoneID = url.parse(req.url, true).query['phoneID'].toString();
 	var query = url.parse(req.url, true).query['q'];
-	//register
 	if(users[phoneID] == undefined){
-		//redirect
 		res.end(`<script>
 			window.location.replace("https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}")
 		</script>`)
@@ -399,6 +399,61 @@ app.get("/conversation", function(req, res){
 		}
 	}
 })
+
+
+
+app.post("/wa", function(req, res){
+	var phoneID = req.body.from.split(":")[2];
+	var query = req.body.Body;
+	var twiml = new MessagingResponse();
+	if(users[phoneID] == undefined){
+		twiml.message("https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}")
+	}else{
+		var response=[]
+		if(users[phoneID]['ws']==null){
+			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
+			connectWS()
+			users[phoneID]['ws'].on("message", function(e){
+				if(query!=undefined){
+					users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
+				}
+			})
+		}else{
+			connectWS()
+			if( users[phoneID]['ws'].readyState == 1 && query != undefined){
+				users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
+			}
+		}
+		function connectWS(){
+			var wasOpen=false;
+			var reconnectTimeout=100;
+			users[phoneID]['ws'].onclose = function(){
+				if(wasOpen){
+					setTimeout(connectWS, 100)
+				}else{
+					reconnectTimeout*=1.5;
+					setTimeout(connectWS, reconnectTimeout)
+				}
+			}
+			users[phoneID]['ws'].onmessage = function(e){
+				if(!wasOpen){
+					wasOpen=true;
+					reconnectTimeout=100
+				}
+				response.push(JSON.parse(e.data));
+				if(JSON.parse(e.data)['type']=="askSpecial"){
+					response.forEach(function(item){
+						twiml.message(JSON.stringify(item))
+					})
+					//res.end(JSON.stringify(response))
+				} 
+			}
+		}
+	}
+	res.end(twiml.toString())
+})
+
+
 
 app.get("/users", function(req, res){
 	res.type('.html');  

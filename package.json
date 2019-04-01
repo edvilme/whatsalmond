@@ -5,6 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "express": "^4.16.4",
+    "twilio": "^3.30.0",
     "ws": "^6.2.1"
   },
   "devDependencies": {},
