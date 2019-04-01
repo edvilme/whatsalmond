@@ -403,7 +403,7 @@ app.get("/conversation", function(req, res){
 
 
 app.post("/wa", function(req, res){
-	var phoneID = req.body.From;
+	//var phoneID = req.body.From;
 	var query = req.body.Body;
 	var twiml = new MessagingResponse();
 	/*if(users[phoneID] == undefined){
