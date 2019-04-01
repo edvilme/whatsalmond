@@ -433,7 +433,7 @@ app.post("/wa", function(req, res){
 			}
 		}
 		users[phoneID]['ws'].onmessage=function(e){
-			console.log(e)
+			console.log(e.data)
 		}
 		function connectWS(){
 			var wasOpen=false;
