@@ -434,6 +434,9 @@ app.post("/wa", function(req, res){
 		}
 		users[phoneID]['ws'].on("message", function(e){
 			console.log(e)
+			twiml.message(req.body.Body)		
+	res.end(twiml.toString())
+
 		})
 		function connectWS(){
 			var wasOpen=false;
@@ -465,7 +468,7 @@ app.post("/wa", function(req, res){
 	}
 	res.writeHead(200, {'Content-Type': 'text/xml'});
 	//twiml.message(req.body.Body)
-	res.end(twiml.toString())
+	//res.end(twiml.toString())
 })
 
 
