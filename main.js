@@ -411,7 +411,8 @@ app.post("/wa", function(req, res){
 	var query = req.body.Body;
 	var twiml = new MessagingResponse();
 	if(users[phoneID] == undefined){
-		twiml.message("https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}")
+		twiml.message("Please login to use the assistant")
+		twiml.message(`https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}`)
 	}else{
 		var response=[]
 		if(users[phoneID]['ws']==null){
