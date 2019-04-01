@@ -4,6 +4,7 @@
   "description": "Bob Assistant Wrapper for Almond and Whatsapp",
   "main": "main.js",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "twilio": "^3.30.0",
     "ws": "^6.2.1"

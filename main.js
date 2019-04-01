@@ -3,6 +3,7 @@ const app = express();
 const https = require('https');
 const url = require('url');
 const WebSocket = require('ws')
+const bodyParser = require('body-parser');
 
 const client = require('twilio')("AC1c85eec35a11340146632055a5a6054e", "ab243ad92d213505f796f750d05185d4");
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
@@ -28,6 +29,9 @@ var reqTokenBody = {
 		"code": "",
 		"redirect_uri": "https://bob-assistant.herokuapp.com",
 }
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
 
 app.get("/", function(req, res){
 	res.type('.html');  
@@ -450,7 +454,7 @@ app.post("/wa", function(req, res){
 			}
 		}
 	}*/
-	console.log(req)
+	console.log(req.body)
 	res.writeHead(200, {'Content-Type': 'text/xml'});
 	twiml.message("req.body")
 	res.end(twiml.toString())
