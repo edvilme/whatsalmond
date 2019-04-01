@@ -420,16 +420,7 @@ app.post("/wa", function(req, res){
 		var response=[]
 		if(users[phoneID]['ws']==null){
 			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
-			users[phoneID]['ws'].on("message", function(e){
-				//console.log("mss")
-				//console.log(e)
-				//if(JSON.parse(e).type=="text"){
-					console.log(e)  
-					twiml.message(e)
-				if(JSON.parse(e).type=="askSpecial"){
-					res.write(twiml.toString())
-				}
-			})
+			
 			twiml.message("Welcome to Bob Assistant")
 			connectWS()
 			users[phoneID]['ws'].onopen = function(e){
@@ -446,7 +437,16 @@ app.post("/wa", function(req, res){
 				console.log("sentB")
 			}
 		}
-		
+		users[phoneID]['ws'].on("message", function(e){
+			//console.log("mss")
+			//console.log(e)
+			//if(JSON.parse(e).type=="text"){
+				console.log(e)  
+				twiml.message(e)
+			if(JSON.parse(e).type=="askSpecial"){
+				res.end(twiml.toString());
+			}
+		})
 		function connectWS(){
 			var wasOpen=false;
 			var reconnectTimeout=100;
