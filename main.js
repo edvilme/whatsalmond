@@ -428,7 +428,8 @@ app.post("/wa", function(req, res){
 		}else{
 			connectWS()
 			if( users[phoneID]['ws'].readyState == 1 && query != undefined){
-				users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
+				users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}));
+				console.log("sent")
 			}
 		}
 		function connectWS(){
