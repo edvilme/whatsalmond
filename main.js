@@ -410,7 +410,6 @@ app.post("/wa", function(req, res){
 	var phoneID = req.body.From.split(":+")[1].toString();
 	var query = req.body.Body;
 	var twiml = new MessagingResponse();
-	console.log(users[phoneID])
 
 	if(users[phoneID] == undefined){
 		twiml.message("Please login to use the assistant")
@@ -421,11 +420,11 @@ app.post("/wa", function(req, res){
 			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
 			twiml.message("Welcome to Bob Assistant")
 			connectWS()
-			users[phoneID]['ws'].on("message", function(e){
-				if(query!=undefined){
+			//users[phoneID]['ws'].on("message", function(e){
+				//if(query!=undefined){
 					users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
-				}
-			})
+				//}
+			//})
 		}else{
 			connectWS()
 			if( users[phoneID]['ws'].readyState == 1 && query != undefined){
@@ -448,13 +447,14 @@ app.post("/wa", function(req, res){
 					wasOpen=true;
 					reconnectTimeout=100
 				}
-				response.push(JSON.parse(e.data));
+				/*response.push(JSON.parse(e.data));
 				if(JSON.parse(e.data)['type']=="askSpecial"){
 					response.forEach(function(item){
 						twiml.message(JSON.stringify(item))
 					})
 					//res.end(JSON.stringify(response))
-				} 
+				} */
+				twiml.message("message")
 			}
 		}
 	}
