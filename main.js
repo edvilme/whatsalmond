@@ -429,7 +429,7 @@ app.post("/wa", function(req, res){
 			connectWS()
 			if( users[phoneID]['ws'].readyState == 1 && query != undefined){
 				users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}));
-				//console.log("sent")
+				console.log("sent")
 			}
 		}
 		function connectWS(){
@@ -456,13 +456,12 @@ app.post("/wa", function(req, res){
 					//res.end(JSON.stringify(response))
 				} */
 				twiml.message("message")
-				res.writeHead(200, {'Content-Type': 'text/xml'});
-				//twiml.message(req.body.Body)
-				res.end(twiml.toString())
 			}
 		}
 	}
-	
+	res.writeHead(200, {'Content-Type': 'text/xml'});
+	//twiml.message(req.body.Body)
+	res.end(twiml.toString())
 })
 
 
