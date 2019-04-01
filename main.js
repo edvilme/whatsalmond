@@ -417,6 +417,7 @@ app.post("/wa", function(req, res){
 		var response=[]
 		if(users[phoneID]['ws']==null){
 			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
+			twiml.message("Welcome to Bob Assistant")
 			connectWS()
 			users[phoneID]['ws'].on("message", function(e){
 				if(query!=undefined){
@@ -478,9 +479,10 @@ app.get("/users", function(req, res){
 				};
 				users[phoneID]['access_token']=JSON.parse(data.toString())['access_token']
 				users[phoneID]['refresh_token']=JSON.parse(data.toString())['refresh_token']
-				res.end(`<script>
+				/*res.end(`<script>
 					window.location.replace("https://bob-assistant.herokuapp.com/conversation?phoneID=${phoneID}")
-				</script>`)
+				</script>`)*/
+				res.end("You can now use Bob Assistant")
 			}
 			/*res.write(data.toString())
 			res.end()*/
