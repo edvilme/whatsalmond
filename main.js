@@ -455,7 +455,8 @@ app.post("/wa", function(req, res){
 					})
 					//res.end(JSON.stringify(response))
 				} */
-				twiml.message("message")
+				console.log("received")
+				//twiml.message("message")
 			}
 		}
 	}
