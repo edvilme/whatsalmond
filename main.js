@@ -438,13 +438,11 @@ app.post("/wa", function(req, res){
 			}
 		}
 		users[phoneID]['ws'].on("message", function(e){
-			//console.log("mss")
-			//console.log(e)
-			//if(JSON.parse(e).type=="text"){
-				console.log(e)  
-				twiml.message(e)
-			if(JSON.parse(e).type=="askSpecial"){
-				res.end(twiml.toString());
+			console.log(e)  
+			if(JSON.parse(e).type=="text"){
+				twiml.message(JSON.parse(e).text)
+			}else if(JSON.parse(e).type=="askSpecial"){
+				res.end(twiml.toString()); 
 			}
 		})
 		function connectWS(){
