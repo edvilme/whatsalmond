@@ -418,6 +418,10 @@ app.post("/wa", function(req, res){
 		var response=[]
 		if(users[phoneID]['ws']==null){
 			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
+			users[phoneID]['ws'].on("message", function(e){
+				console.log("mss")
+				console.log(e.data)
+			})
 			twiml.message("Welcome to Bob Assistant")
 			connectWS()
 			users[phoneID]['ws'].onmessage = function(e){
@@ -432,9 +436,7 @@ app.post("/wa", function(req, res){
 				console.log("sent")
 			}
 		}
-		/*users[phoneID]['ws'].onmessage=function(e){
-			console.log(e.data)
-		}*/
+		
 		function connectWS(){
 			var wasOpen=false;
 			var reconnectTimeout=100;
@@ -458,7 +460,7 @@ app.post("/wa", function(req, res){
 					})
 					//res.end(JSON.stringify(response))
 				} */
-				console.log("received")
+				//console.log("received")
 				//twiml.message("message")
 			}
 		}
