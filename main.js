@@ -427,7 +427,7 @@ app.post("/wa", function(req, res){
 					console.log(e)  
 					twiml.message(e)
 				if(JSON.parse(e).type=="askSpecial"){
-					res.end(twiml.toString())
+					res.write(twiml.toString())
 				}
 			})
 			twiml.message("Welcome to Bob Assistant")
