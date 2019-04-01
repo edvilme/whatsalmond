@@ -410,10 +410,12 @@ app.post("/wa", function(req, res){
 	var phoneID = req.body.From.split(":+")[1].toString();
 	var query = req.body.Body;
 	var twiml = new MessagingResponse();
+	res.writeHead(200, {'Content-Type': 'text/xml'});
 
 	if(users[phoneID] == undefined){
 		twiml.message("Please login to use the assistant")
 		twiml.message(`https://almond.stanford.edu/me/api/oauth2/authorize?response_type=code&client_id=9e38447172c71a0f&scope=user-exec-command&redirect_uri=https://bob-assistant.herokuapp.com/users?phoneID=${phoneID}`)
+		res.end(twiml.toString())
 	}else{
 		var response=[]
 		if(users[phoneID]['ws']==null){
@@ -423,6 +425,8 @@ app.post("/wa", function(req, res){
 				//console.log(e)
 				if(JSON.parse(e).type=="text"){
 					console.log(JSON.parse(e).text)
+				}else if(JSON.parse(e).type=="askSpecial"){
+					res.end(twiml.toString())
 				}
 			})
 			twiml.message("Welcome to Bob Assistant")
@@ -470,9 +474,8 @@ app.post("/wa", function(req, res){
 			}
 		}
 	}
-	res.writeHead(200, {'Content-Type': 'text/xml'});
 	//twiml.message(req.body.Body)
-	res.end(twiml.toString())
+	//res.end(twiml.toString())
 })
 
 
