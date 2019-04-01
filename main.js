@@ -442,7 +442,7 @@ app.post("/wa", function(req, res){
 			if(JSON.parse(e).type=="text"){
 				twiml.message(JSON.parse(e).text)
 			}else if(JSON.parse(e).type=="askSpecial"){
-				res.end(twiml.toString()); 
+				res.end(twiml.toString());  
 			}
 		})
 		function connectWS(){
