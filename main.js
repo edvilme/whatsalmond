@@ -432,12 +432,6 @@ app.post("/wa", function(req, res){
 				//console.log("sent")
 			}
 		}
-		users[phoneID]['ws'].on("message", function(e){
-			twiml.message("message");
-			res.writeHead(200, {'Content-Type': 'text/xml'});
-			//twiml.message(req.body.Body)
-			res.end(twiml.toString())
-		})
 		function connectWS(){
 			var wasOpen=false;
 			var reconnectTimeout=100;
@@ -461,7 +455,10 @@ app.post("/wa", function(req, res){
 					})
 					//res.end(JSON.stringify(response))
 				} */
-				//twiml.message("message")
+				twiml.message("message")
+				res.writeHead(200, {'Content-Type': 'text/xml'});
+				//twiml.message(req.body.Body)
+				res.end(twiml.toString())
 			}
 		}
 	}
