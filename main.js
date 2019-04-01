@@ -420,20 +420,22 @@ app.post("/wa", function(req, res){
 			users[phoneID]['ws']=new WebSocket(`wss://almond.stanford.edu/me/api/conversation?access_token=${users[phoneID]['access_token']}`);
 			users[phoneID]['ws'].on("message", function(e){
 				console.log("mss")
-				console.log(e.data)
+				console.log(e)
 			})
 			twiml.message("Welcome to Bob Assistant")
 			connectWS()
-			users[phoneID]['ws'].onmessage = function(e){
+			users[phoneID]['ws'].onopen = function(e){
 				//if(query!=undefined){
 					users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}))
+				console.log("sentA")
+
 				//}
 			}
 		}else{
 			connectWS()
 			if( users[phoneID]['ws'].readyState == 1 && query != undefined){
 				users[phoneID]['ws'].send(JSON.stringify({"type": "command", "text": query}));
-				console.log("sent")
+				console.log("sentB")
 			}
 		}
 		
